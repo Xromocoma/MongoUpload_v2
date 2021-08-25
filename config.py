@@ -16,4 +16,4 @@ COUNT_USER_WORKER = int(getenv('COUNT_USER_WORKER',30))
 
 UPLOAD_GRPC_ADDRESS = getenv('UPLOAD_GRPC_ADDRESS','')  # host:port
 
-LIMIT = int(getenv('LIMIT',500))
+LIMIT = int(getenv('LIMIT',50000))

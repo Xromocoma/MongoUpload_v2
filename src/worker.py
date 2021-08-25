@@ -11,8 +11,9 @@ from src.upload import upload_file
 
 # from src.grpc_connect import channel
 
-class Worker:
-    async def photo(self):
+
+async def photo():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.profile_db
         res = mongo_db['photo'].find({"photo_content_id": {'$regex': 'http'}}).limit(LIMIT)
@@ -29,8 +30,12 @@ class Worker:
             print(i, "photo")
             t = WorkerThread(kind="photo", queue=queue, stub=stub)
             t.start()
+    except Exception as e:
+        print(e, flush=True)
 
-    async def message(self):
+
+async def message():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.chat_db
         res = mongo_db['dialog_message'].find({"$or": [{"message_content.data_id": {"$regex": "http"}},
@@ -52,8 +57,12 @@ class Worker:
             print(i, "message")
             t = WorkerThread(kind="message", queue=queue, stub=stub)
             t.start()
+    except Exception as e:
+        print(e, flush=True)
 
-    async def user(self):
+
+async def user():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.profile_db
         res = mongo_db['user'].find({"user_avatar.content_id": {"$regex": "http"}}).limit(LIMIT)
@@ -69,8 +78,12 @@ class Worker:
             print(i, "user")
             t = WorkerThread(kind="user", queue=queue, stub=stub)
             t.start()
+    except Exception as e:
+        print(e, flush=True)
 
-    async def chat_room(self):
+
+async def chat_room():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.chat_db
         res = mongo_db['room'].find({"room_avatar_id": {"$regex": "http"}}).limit(LIMIT)
@@ -84,8 +97,12 @@ class Worker:
         print("chat_room", queue.qsize())
         t = WorkerThread(kind="chat_room", queue=queue, stub=stub)
         t.start()
+    except Exception as e:
+        print(e, flush=True)
 
-    async def event(self):
+
+async def event():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.event_db
         res = mongo_db['event'].find({"$or": [{"event_image.avatar.id": {"$regex": "http"}},
@@ -102,8 +119,11 @@ class Worker:
 
         t = WorkerThread(kind="event", queue=queue, stub=stub)
         t.start()
+    except Exception as e:
+        print(e, flush=True)
 
-    async def greeting(self):
+async def greeting():
+    try:
         mongo_client = Connection().client
         mongo_db = mongo_client.prodile_db
         res = mongo_db['greeting'].find({"greeting_avatar_id": {"$regex": "http"}}).limit(LIMIT)
@@ -118,7 +138,8 @@ class Worker:
 
         t = WorkerThread(kind="greeting", queue=queue, stub=stub)
         t.start()
-
+    except Exception as e:
+        print(e, flush=True)
 
 class WorkerThread(Thread):
 
@@ -140,7 +161,7 @@ class WorkerThread(Thread):
 def update_object(kind, item, stub_grpc):
     try:
         if kind == 'photo':
-            if item['room_avatar_id'][-1] == '.':
+            if item['photo_content_id'][-1] == '.':
                 return
             file = upload_file(item['photo_content_id'], stub_grpc)
             if file:
@@ -149,8 +170,7 @@ def update_object(kind, item, stub_grpc):
                     print("err")
 
         elif kind == 'user':
-            if item['room_avatar_id'][-1] == '.':
-
+            if item['user_avatar']['content_id'][-1] == '.':
                 return
             file = upload_file(item['user_avatar']['content_id'], stub_grpc)
             if file:

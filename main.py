@@ -1,26 +1,27 @@
 import asyncio
+import time
 from threading import Thread
-from src.worker import Worker
+from src.worker import photo, user, greeting, event, chat_room, message
+
 
 class FatherThread(Thread):
     def __init__(self, kind):
         Thread.__init__(self)
-        self.worker = Worker()
         self.file_kind = kind
 
     def run(self):
         if self.file_kind == 'photo':
-            asyncio.run(self.worker.photo())
+            asyncio.run(photo())
         elif self.file_kind == 'user':
-            asyncio.run(self.worker.user())
+            asyncio.run(user())
         elif self.file_kind == 'chat_room':
-            asyncio.run(self.worker.chat_room())
+            asyncio.run(chat_room())
         elif self.file_kind == 'message':
-            asyncio.run(self.worker.message())
+            asyncio.run(message())
         elif self.file_kind == 'event':
-            asyncio.run(self.worker.event())
+            asyncio.run(event())
         elif self.file_kind == 'greeting':
-            asyncio.run(self.worker.greeting())
+            asyncio.run(greeting())
         print(f"Родитель `{self.file_kind}` закончил работу ", flush=True)
 
 
@@ -32,11 +33,14 @@ def main():
             'event',
             'greeting']
     # kind = ['message']
+    t=[]
     for i in kind:
-        t = FatherThread(i)
-        t.start()
+        t.append(FatherThread(i))
+    for item in t:
+        item.start()
+    for item in t:
+        item.join()
 
 
 if __name__ == '__main__':
     main()
-

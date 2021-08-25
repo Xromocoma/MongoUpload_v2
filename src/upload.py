@@ -56,14 +56,13 @@ def upload_file(file_url, stub):
     if len(attachment['content']) > max_size:
         return None
     try:
-        return None
-        # file = upload(
-        #     stub=stub,
-        #     file_name=attachment["file_name"],
-        #     content_kind=attachment["content_kind"],
-        #     content=attachment['content'],
-        #     content_type=attachment['content_type']
-        # )
+        file = upload(
+            stub=stub,
+            file_name=attachment["file_name"],
+            content_kind=attachment["content_kind"],
+            content=attachment['content'],
+            content_type=attachment['content_type']
+        )
         if file is not None:
             return file
         return None

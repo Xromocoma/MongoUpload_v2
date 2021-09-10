@@ -25,11 +25,14 @@ async def photo():
 
         channel = grpc.insecure_channel(UPLOAD_GRPC_ADDRESS, options=(('grpc.max_concurrent_streams', -1),))
         stub = media_pb2_grpc.MediaStub(channel)
-
+        threads=[]
         for i in range(COUNT_PHOTO_WORKER):
             print(i, "photo")
-            t = WorkerThread(kind="photo", queue=queue, stub=stub)
-            t.start()
+            threads.append( WorkerThread(kind="photo", queue=queue, stub=stub))
+        for x in threads:
+            x.start()
+        for x in threads:
+            x.join()
     except Exception as e:
         print(e, flush=True)
 
@@ -52,11 +55,14 @@ async def message():
         async for item in res:
             queue.put_nowait(item)
         print("message", queue.qsize())
-
+        threads = []
         for i in range(COUNT_MESSAGE_WORKER):
             print(i, "message")
-            t = WorkerThread(kind="message", queue=queue, stub=stub)
-            t.start()
+            threads.append(WorkerThread(kind="message", queue=queue, stub=stub))
+        for x in threads:
+            x.start()
+        for x in threads:
+            x.join()
     except Exception as e:
         print(e, flush=True)
 
@@ -73,11 +79,15 @@ async def user():
         async for item in res:
             queue.put_nowait(item)
         print("user", queue.qsize())
-
+        threads=[]
         for i in range(COUNT_USER_WORKER):
             print(i, "user")
-            t = WorkerThread(kind="user", queue=queue, stub=stub)
-            t.start()
+            threads.append(WorkerThread(kind="user", queue=queue, stub=stub))
+
+        for x in threads:
+            x.start()
+        for x in threads:
+            x.join()
     except Exception as e:
         print(e, flush=True)
 
@@ -97,6 +107,7 @@ async def chat_room():
         print("chat_room", queue.qsize())
         t = WorkerThread(kind="chat_room", queue=queue, stub=stub)
         t.start()
+        t.join()
     except Exception as e:
         print(e, flush=True)
 
@@ -119,6 +130,7 @@ async def event():
 
         t = WorkerThread(kind="event", queue=queue, stub=stub)
         t.start()
+        t.join()
     except Exception as e:
         print(e, flush=True)
 
@@ -138,6 +150,7 @@ async def greeting():
 
         t = WorkerThread(kind="greeting", queue=queue, stub=stub)
         t.start()
+        t.join()
     except Exception as e:
         print(e, flush=True)
 

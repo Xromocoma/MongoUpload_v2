@@ -1,6 +1,6 @@
 version: '3.5'
 services:
-  upload-media:
+  upload-media-user:
       build:
         context: .
         dockerfile: Dockerfile
@@ -10,11 +10,19 @@ services:
         KAFKA_GROUP_ID: upload
         KAFKA_HOST: 127.0.0.1
         KAFKA_PORT: 9092
+        # DEV
+#        MONGO_USER: usr
+#        MONGO_PASSWORD:
+#        MONGO_HOST: cloud-dev-mongo-node-1
+#        MONGO_PORT: 27017
+        # PROD
         MONGO_USER: usr
         MONGO_PASSWORD:
-        MONGO_HOST: cloud-dev-mongo-node-1
+        MONGO_HOST: cloud-user-mongo-node-1,cloud-user-mongo-node-2,cloud-user-mongo-node-3
         MONGO_PORT: 27017
-        COUNT_PHOTO_WORKER: 30
-        COUNT_MESSAGE_WORKER: 30
-        COUNT_USER_WORKER: 30
-      restart: on-failure
+
+        COUNT_PHOTO_WORKER: 90
+        COUNT_MESSAGE_WORKER: 90
+        COUNT_USER_WORKER: 90
+        LIMIT: 10000
+      restart: always

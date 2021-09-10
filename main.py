@@ -26,14 +26,15 @@ class FatherThread(Thread):
 
 
 def main():
-    kind = ['photo',
-            'user',
-            'chat_room',
-            'message',
-            'event',
-            'greeting']
-    # kind = ['message']
-    t=[]
+    kind = [
+        'photo',
+        'user',
+        'chat_room',
+        'message',
+        'event',
+        'greeting'
+    ]
+    t = []
     for i in kind:
         t.append(FatherThread(i))
     for item in t:

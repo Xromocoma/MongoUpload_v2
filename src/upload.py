@@ -15,7 +15,11 @@ def upload_file(file_url, stub):
     max_size = 104857600  # 100 mb
     max_image_size = 7000000  # ~7 mb
     request = requests.request(method='GET', url=file_url)
-    file_name = request.url.replace("https://static.skylove.su/", "")
+    if not request:
+        return None
+    if request.status_code != 200:
+        return None
+    file_name = request.url.replace("https://s3.eu-central-1.amazonaws.com/static.skylove.su/", "")
     file_name = file_name[file_name.find('/') + 1:]
 
     attachment = {
@@ -68,4 +72,3 @@ def upload_file(file_url, stub):
         return None
     except Exception as e:
         print(e, flush=True)
-
